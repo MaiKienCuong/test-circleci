@@ -3,7 +3,6 @@
 version: 2.1
 
 orbs:
-  maven: circleci/maven@1.2.0
   docker: circleci/docker@2.0.1
 
 jobs:
@@ -37,5 +36,4 @@ jobs:
 workflows:
   my-workflow:
     jobs:
-      - maven/test
       - build-and-push

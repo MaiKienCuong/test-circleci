@@ -38,6 +38,4 @@ workflows:
   my-workflow:
     jobs:
       - maven/test
-      - build-and-push:
-          requires:
-            - maven/test
+      - build-and-push

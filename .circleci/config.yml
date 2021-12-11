@@ -16,7 +16,7 @@ jobs:
       - checkout
       - run:
           name: "copy source"
-          command: "cp -r src /home/circleci/src"
+          command: "mkdir /home/circleci/src && cp -r src /home/circleci/src"
       - run:
           name: "copy pom"
           command: "cp pom.xml /home/circleci"

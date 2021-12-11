@@ -9,8 +9,8 @@ orbs:
 jobs:
   build-and-push:
     environment:
-      DOCKER-IMAGE: cuongmaikien/test-circleci
-      DOCKER-TAG: latest
+      DOCKER_IMAGE: cuongmaikien/test-circleci
+      DOCKER_TAG: latest
     executor: docker/docker
     steps:
       - setup_remote_docker
@@ -19,12 +19,12 @@ jobs:
           docker-username: DOCKER_LOGIN
           docker-password: DOCKER_PASSWORD
       - docker/build:
-          image: $DOCKER-IMAGE
-          tag: $DOCKER-TAG
+          image: $DOCKER_IMAGE
+          tag: $DOCKER_TAG
       - docker/push:
           digest-path: /tmp/digest.txt
-          image: $DOCKER-IMAGE
-            tag: $DOCKER-TAG
+          image: $DOCKER_IMAGE
+          tag: $DOCKER_TAG
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"

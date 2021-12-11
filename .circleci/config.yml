@@ -18,9 +18,7 @@ jobs:
           docker-username: DOCKER_LOGIN
           docker-password: DOCKER_PASSWORD
       - run:
-          command: "unset M2_HOME"
-      - run:
-          command: "export M3_HOME /usr/share/maven"
+          command: "export M2_HOME=/usr/share/maven"
       - docker/build:
           image: $DOCKER_IMAGE
           tag: $DOCKER_TAG

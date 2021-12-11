@@ -4,7 +4,7 @@
 FROM maven:3.8-openjdk-11-slim AS build
 COPY src /home/circleci/src
 COPY pom.xml /home/circleci
-RUN /usr/share/maven/bin/mvn -f /home/circleci/pom.xml clean package
+RUN mvn -f /home/circleci/pom.xml clean package
 
 #
 # Package stage

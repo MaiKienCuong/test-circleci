@@ -17,7 +17,9 @@ public class TestCircleciApplication {
 
     @GetMapping
     public String test() {
-        return "<h4>test circle ci with docker successfully</h4>";
+        return "<h4>test circle ci with docker successfully</h4> " +
+                "<br> " +
+                "<h4>test cherry pick, test push commit during creating pull request</>";
     }
 
 }

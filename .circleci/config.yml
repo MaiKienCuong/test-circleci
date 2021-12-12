@@ -49,6 +49,14 @@ workflows:
       - build-and-push:
           requires:
             - maven/test
+          filters:
+            branches:
+              only:
+                - master
       - deploy:
           requires:
             - build-and-push
+          filters:
+            branches:
+              only:
+                - master

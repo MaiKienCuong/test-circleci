@@ -22,7 +22,7 @@ class TestCircleciApplicationTests {
     @Test
     void test_multi() {
         int multi = 2 * 2;
-        Assertions.assertEquals(5, multi);
+        Assertions.assertEquals(4, multi);
     }
 
 }

@@ -57,7 +57,7 @@ workflows:
       - my-test
       - build-and-push:
           requires:
-            - maven/test
+            - my-test
           filters:
             branches:
               only:

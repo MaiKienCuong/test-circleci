@@ -17,7 +17,7 @@ public class TestCircleciApplication {
 
     @GetMapping
     public String test() {
-        return "test circle ci with docker";
+        return "test circle ci with docker successfully";
     }
 
 }

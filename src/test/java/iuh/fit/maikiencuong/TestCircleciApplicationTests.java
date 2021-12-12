@@ -19,4 +19,10 @@ class TestCircleciApplicationTests {
         Assertions.assertEquals(1, sub);
     }
 
+    @Test
+    void test_multi() {
+        int multi = 2 * 2;
+        Assertions.assertEquals(4, multi);
+    }
+
 }

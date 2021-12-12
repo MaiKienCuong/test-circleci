@@ -28,6 +28,14 @@ jobs:
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+  deploy:
+    executor: docker/docker
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "9b:19:7a:7d:70:45:f7:1c:50:91:d6:e7:a3:6a:bd:92"
+      - run: ssh -oStrictHostKeyChecking=no -v ec2-user@$HOST_SERVER './deploy.sh'
+
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -41,3 +49,6 @@ workflows:
       - build-and-push:
           requires:
             - maven/test
+      - deploy:
+          requires:
+            - build-and-push

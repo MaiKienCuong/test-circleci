@@ -13,8 +13,8 @@ jobs:
     steps:
       - run:
           command: |
-            cp '($pwd)'/src /home/circleci/src
-            cp '($pwd)'/pom.xml /home/circleci
+            cp /src /home/circleci/src
+            cp pom.xml /home/circleci
             mvn -f /home/circleci/pom.xml clean package
   build-and-push:
     environment:

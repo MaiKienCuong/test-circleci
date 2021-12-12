@@ -12,9 +12,10 @@ jobs:
       - image: maven:3.6.3-openjdk-15-slim
     steps:
       - run:
-          command: cp '($pwd)'/src /home/circleci/src \
-          && cp '($pwd)'/pom.xml /home/circleci \
-          && mvn -f /home/circleci/pom.xml clean package
+          command: |
+            cp '($pwd)'/src /home/circleci/src
+            cp '($pwd)'/pom.xml /home/circleci
+            mvn -f /home/circleci/pom.xml clean package
   build-and-push:
     environment:
       DOCKER_IMAGE: cuongmaikien/test-circleci

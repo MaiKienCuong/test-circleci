@@ -7,15 +7,6 @@ orbs:
   docker: circleci/docker@2.0.1
 
 jobs:
-  my-test:
-    docker:
-      - image: maven:3.6.3-openjdk-15-slim
-    steps:
-      - run:
-          command: |
-            cp $(pwd)/src /home/circleci/src
-            cp $(pwd)/pom.xml /home/circleci/pom.xml
-            mvn -f /home/circleci/pom.xml clean package
   build-and-push:
     environment:
       DOCKER_IMAGE: cuongmaikien/test-circleci
@@ -54,10 +45,10 @@ jobs:
 workflows:
   my-workflow:
     jobs:
-      - my-test
+      - maven/test
       - build-and-push:
           requires:
-            - my-test
+            - maven/test
           filters:
             branches:
               only:

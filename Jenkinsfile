@@ -75,7 +75,7 @@ pipeline {
         setStatusPending("ci/jenkins/Deploy", "Deploy stage is running");
         withCredentials([sshUserPrivateKey(credentialsId: "deploy-ssh-key", keyFileVariable: 'SSH_KEY')]) {
             sh 'echo ${SSH_KEY}'
-            sh 'ssh -i ${SSH_KEY} jenkins@157.230.38.225 "./deploy.sh"'
+            sh 'ssh -oStrictHostKeyChecking=no -i ${SSH_KEY} jenkins@157.230.38.225 "./deploy.sh"'
         }
       }
       post{

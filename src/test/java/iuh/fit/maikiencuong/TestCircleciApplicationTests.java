@@ -10,7 +10,7 @@ class TestCircleciApplicationTests {
     @Test
     void test_add() {
         int sum = 1 + 1;
-        Assertions.assertEquals(2, sum);
+        Assertions.assertEquals(3, sum);
     }
 
     @Test

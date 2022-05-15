@@ -30,7 +30,9 @@ pipeline {
         setStatusPending("ci/jenkins/Test", "Test stage is running");
         sh "pwd"
         sh "ls"
-        sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw test'''
+        sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw'''
+        sh './mvnw --version'
+        sh './mvnw test'
       }
       post{
         success{
@@ -71,20 +73,21 @@ pipeline {
       }
     }
     stage("deploy"){
-      steps{
-        setStatusPending("ci/jenkins/Deploy", "Deploy stage is running");
-        withCredentials([sshUserPrivateKey(credentialsId: "deploy-ssh-key", keyFileVariable: 'SSH_KEY')]) {
-            sh 'echo ${SSH_KEY}'
-            sh 'ssh -oStrictHostKeyChecking=no -i ${SSH_KEY} jenkins@157.230.38.225 "./deploy.sh"'
-        }
-      }
-      post{
-        success{
-          setStatus("ci/jenkins/Deploy", "Deploy success", "SUCCESS")
-        }
-        failure{
-          setStatus("ci/jenkins/Deploy", "Deploy failure", "FAILURE")
-        }
+      if(${GIT_BRANCH} === 'master'){
+        steps{
+          setStatusPending("ci/jenkins/Deploy", "Deploy stage is running");
+          withCredentials([sshUserPrivateKey(credentialsId: "deploy-ssh-key", keyFileVariable: 'SSH_KEY')]) {
+              sh 'ssh -oStrictHostKeyChecking=no -i ${SSH_KEY} jenkins@157.230.38.225 "./deploy.sh"'
+          }
+          }
+          post{
+            success{
+              setStatus("ci/jenkins/Deploy", "Deploy success", "SUCCESS")
+            }
+            failure{
+              setStatus("ci/jenkins/Deploy", "Deploy failure", "FAILURE")
+            }
+          }
       }
     }
   }

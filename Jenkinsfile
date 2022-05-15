@@ -4,6 +4,7 @@ pipeline {
 
   environment {
     DOCKER_IMAGE = "cuongmaikien/test-java-jenkins"
+    GITHUB_API_URL='https://api.github.com/repos/MaiKienCuong/test-circleci'
   }
 
   stages {
@@ -39,9 +40,15 @@ pipeline {
   post {
     success {
       echo "SUCCESSFUL"
+      withCredentials([usernamePassword(credentialsId: '9f4a5f82-8155-4acf-b977-fcf832850582', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        sh 'curl -X POST --user $USERNAME:$PASSWORD --data  "{\\"state\\": \\"success\\"}" --url $GITHUB_API_URL/statuses/$GIT_COMMIT'
+      }
     }
     failure {
       echo "FAILED"
+      withCredentials([usernamePassword(credentialsId: '9f4a5f82-8155-4acf-b977-fcf832850582', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        sh 'curl -X POST --user $USERNAME:$PASSWORD --data  "{\\"state\\": \\"failure\\"}" --url $GITHUB_API_URL/statuses/$GIT_COMMIT'
+      }
     }
   }
 }

@@ -8,11 +8,11 @@ void setBuildStatus(String context, String message, String state) {
   ]);
 }
 
-void setBuildStatusPending(){
+void setBuildStatusPending(String context, String message){
   step([
       $class: "GitHubSetCommitStatusBuilder",
-      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
-      statusMessage: [content: "Building"]
+      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
+      statusMessage: [content: message]
   ]);
 }
 
@@ -25,13 +25,8 @@ pipeline {
   }
 
   stages {
-    stage("Set pending"){
-      steps{
-        setBuildStatusPending();
-      }
-    }
-
     stage("Test") {
+      setBuildStatusPending("Test", "Test stage is running");
       steps {
         sh "pwd"
         sh "ls"
@@ -48,6 +43,7 @@ pipeline {
     }
 
     stage("build") {
+      setBuildStatusPending("Build", "Build stage is running");
       environment {
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
       }

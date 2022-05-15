@@ -70,6 +70,22 @@ pipeline {
         }
       }
     }
+    stage("deploy"){
+      steps{
+        setStatusPending("ci/jenkins/Deploy", "Deploy stage is running");
+        withCredentials([sshUserPrivateKey(credentialsId: "deploy-ssh-key", keyFileVariable: 'SSH_KEY')]) {
+            sh "ssh -i ${SSH_KEY} jenkins@http://157.230.38.225 './deploy.sh'"
+        }
+      }
+      post{
+        success{
+          setStatus("ci/jenkins/Deploy", "Deploy success", "SUCCESS")
+        }
+        failure{
+          setStatus("ci/jenkins/Deploy", "Deploy failure", "FAILURE")
+        }
+      }
+    }
   }
 
   post {

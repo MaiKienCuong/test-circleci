@@ -1,6 +1,6 @@
 pipeline {
 
-  agent none
+  agent any
 
   environment {
     DOCKER_IMAGE = "cuongmaikien/test-java-jenkins"
@@ -9,7 +9,9 @@ pipeline {
   stages {
     stage("Test") {
       steps {
-        sh "./mvnw test"
+        sh "pwd"
+        sh "ls"
+        sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw test'''
       }
     }
 

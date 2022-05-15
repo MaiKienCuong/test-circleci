@@ -1,15 +1,11 @@
-#
-# Build stage
-#
-FROM maven:3.6.3-openjdk-15-slim AS build
-COPY src /home/circleci/src
-COPY pom.xml /home/circleci
-RUN mvn -f /home/circleci/pom.xml clean package
+FROM adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim AS build
+WORKDIR /home/circleci/
+COPY .mvn ./.mvn
+COPY mvnw pom.xml ./
+COPY src ./src
+RUN chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw clean package -Dmaven.test.skip=true
 
-#
-# Package stage
-#
-FROM openjdk:15-jdk-slim
+FROM adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim
 COPY --from=build /home/circleci/target/test-circleci-0.0.1.jar /usr/local/lib/test-circleci-0.0.1.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/usr/local/lib/test-circleci-0.0.1.jar"]

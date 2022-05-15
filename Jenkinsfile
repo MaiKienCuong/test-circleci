@@ -1,13 +1,10 @@
-void setBuildStatus(String message, String state) {
+void setBuildStatus(String context, String message, String state) {
   step([
       $class: "GitHubCommitStatusSetter",
       reposSource: [$class: "ManuallyEnteredRepositorySource", url: "${GIT_URL}"],
-      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
       errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
-      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [
-        [$class: "BetterThanOrEqualBuildResult", message: message, state: state, result: "1"],
-        [$class: "BetterThanOrEqualBuildResult", message: "123", state: "FAILURE", result: "2"],
-      ]]
+      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]]]
   ]);
 }
 
@@ -25,7 +22,6 @@ pipeline {
 
   environment {
     DOCKER_IMAGE = "cuongmaikien/test-java-jenkins"
-    GITHUB_API_URL='https://api.github.com/repos/MaiKienCuong/test-circleci'
   }
 
   stages {
@@ -40,6 +36,14 @@ pipeline {
         sh "pwd"
         sh "ls"
         sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw test'''
+      }
+      post{
+        success{
+          setBuildStatus("Test", "Test success", "SUCCESS")
+        }
+        failure{
+          setBuildStatus("Test", "Test failure", "FAILURE")
+        }
       }
     }
 
@@ -61,17 +65,23 @@ pipeline {
         sh "docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
         sh "docker image rm ${DOCKER_IMAGE}:latest"
       }
+      post{
+        success{
+          setBuildStatus("Build", "Build success", "SUCCESS")
+        }
+        failure{
+          setBuildStatus("Build", "Build failure", "FAILURE")
+        }
+      }
     }
   }
 
   post {
     success {
       echo "SUCCESSFUL"
-      setBuildStatus("Build succeeded", "SUCCESS");
     }
     failure {
       echo "FAILED"
-      setBuildStatus("Build failed", "FAILURE");
     }
   }
 }

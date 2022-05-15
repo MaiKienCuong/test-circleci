@@ -4,7 +4,7 @@ void setBuildStatus(String context, String message, String state) {
       reposSource: [$class: "ManuallyEnteredRepositorySource", url: "${GIT_URL}"],
       contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
       errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
-      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]]]
+      statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]]]
   ]);
 }
 

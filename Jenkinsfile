@@ -5,8 +5,8 @@ void setBuildStatus(String message, String state) {
       contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
       errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
       statusResultSource: [ $class: "ConditionalStatusResultSource", results: [
-        [$class: "AnyBuildResult", message: message, state: state],
-        [$class: "AnyBuildResult", message: "123", state: state],
+        [$class: "BetterThanOrEqualBuildResult", message: message, state: state, result: "1"],
+        [$class: "BetterThanOrEqualBuildResult", message: "123", state: state, result: "2"],
       ]]
   ]);
 }
@@ -15,7 +15,7 @@ void setBuildStatusPending(){
   step([
       $class: "GitHubSetCommitStatusBuilder",
       contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
-      statusMessage: [content: "123"]
+      statusMessage: [content: "Building"]
   ]);
 }
 

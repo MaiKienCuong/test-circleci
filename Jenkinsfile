@@ -6,7 +6,7 @@ void setBuildStatus(String message, String state) {
       errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
       statusResultSource: [ $class: "ConditionalStatusResultSource", results: [
         [$class: "BetterThanOrEqualBuildResult", message: message, state: state, result: "1"],
-        [$class: "BetterThanOrEqualBuildResult", message: "123", state: state, result: "2"],
+        [$class: "BetterThanOrEqualBuildResult", message: "123", state: "FAILURE", result: "2"],
       ]]
   ]);
 }
@@ -67,16 +67,10 @@ pipeline {
   post {
     success {
       echo "SUCCESSFUL"
-//       withCredentials([usernamePassword(credentialsId: '9f4a5f82-8155-4acf-b977-fcf832850582', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//         sh 'curl -X POST --user $USERNAME:$PASSWORD --data  "{\\"state\\": \\"success\\"}" --url $GITHUB_API_URL/statuses/$GIT_COMMIT'
-//       }
       setBuildStatus("Build succeeded", "SUCCESS");
     }
     failure {
       echo "FAILED"
-//       withCredentials([usernamePassword(credentialsId: '9f4a5f82-8155-4acf-b977-fcf832850582', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//         sh 'curl -X POST --user $USERNAME:$PASSWORD --data  "{\\"state\\": \\"failure\\"}" --url $GITHUB_API_URL/statuses/$GIT_COMMIT'
-//       }
       setBuildStatus("Build failed", "FAILURE");
     }
   }

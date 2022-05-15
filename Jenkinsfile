@@ -26,8 +26,8 @@ pipeline {
 
   stages {
     stage("Test") {
-      setBuildStatusPending("Test", "Test stage is running");
       steps {
+        setBuildStatusPending("Test", "Test stage is running");
         sh "pwd"
         sh "ls"
         sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw test'''
@@ -43,11 +43,11 @@ pipeline {
     }
 
     stage("build") {
-      setBuildStatusPending("Build", "Build stage is running");
       environment {
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
       }
       steps {
+        setBuildStatusPending("Build", "Build stage is running");
         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . "
         sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
         sh "docker image ls | grep ${DOCKER_IMAGE}"
@@ -75,9 +75,11 @@ pipeline {
   post {
     success {
       echo "SUCCESSFUL"
+      setBuildStatus("ci/jenkins", "Ci success", "SUCCESS")
     }
     failure {
       echo "FAILED"
+      setBuildStatus("ci/jenkins", "Ci failure", "FAILURE")
     }
   }
 }

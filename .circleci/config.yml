@@ -2,39 +2,56 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-orbs:
-  maven: circleci/maven@1.2.0
-  docker: circleci/docker@2.0.1
+#orbs:
+# maven: circleci/maven@1.2.0
+#   docker: circleci/docker@2.0.1
 
 jobs:
+  test:
+    docker:
+      - image: adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim
+    steps:
+      - checkout
+      - run:
+          name: set up mvn command
+          command: | 
+            pwd
+            ls
+            chmod +x mvnw
+            sed -i "s/\r$//" mvnw
+            ./mvn --version
   build-and-push:
     environment:
       DOCKER_IMAGE: cuongmaikien/test-circleci
       DOCKER_TAG: latest
-    executor: docker/docker
+    docker:
+      - image: docker
     steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check:
-          docker-username: DOCKER_LOGIN
-          docker-password: DOCKER_PASSWORD
-      - docker/build:
-          image: $DOCKER_IMAGE
-          tag: $DOCKER_TAG
-      - docker/push:
-          digest-path: /tmp/digest.txt
-          image: $DOCKER_IMAGE
-          tag: $DOCKER_TAG
       - run:
-          command: |
-            echo "Digest is: $(</tmp/digest.txt)"
-  deploy:
-    executor: docker/docker
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "9b:19:7a:7d:70:45:f7:1c:50:91:d6:e7:a3:6a:bd:92"
-      - run: ssh -oStrictHostKeyChecking=no -v ec2-user@$HOST_SERVER './deploy.sh'
+          name: show-docker-version
+          command: docker --version
+#      - setup_remote_docker
+#      - checkout
+#      - docker/check:
+#          docker-username: DOCKER_LOGIN
+#          docker-password: DOCKER_PASSWORD
+#      - docker/build:
+#          image: $DOCKER_IMAGE
+#          tag: $DOCKER_TAG
+#      - docker/push:
+#          digest-path: /tmp/digest.txt
+#          image: $DOCKER_IMAGE
+#          tag: $DOCKER_TAG
+#      - run:
+#          command: |
+#            echo "Digest is: $(</tmp/digest.txt)"
+#  deploy:
+#    executor: docker/docker
+#    steps:
+#      - add_ssh_keys:
+#          fingerprints:
+#            - "9b:19:7a:7d:70:45:f7:1c:50:91:d6:e7:a3:6a:bd:92"
+#      - run: ssh -oStrictHostKeyChecking=no -v ec2-user@$HOST_SERVER './deploy.sh'
 
 
 # Define a job to be invoked later in a workflow.
@@ -45,18 +62,18 @@ jobs:
 workflows:
   my-workflow:
     jobs:
-      - maven/test
+      - test
       - build-and-push:
           requires:
-            - maven/test
+            - test
           filters:
             branches:
               only:
                 - master
-      - deploy:
-          requires:
-            - build-and-push
-          filters:
-            branches:
-              only:
-                - master
+#      - deploy:
+#          requires:
+#            - build-and-push
+#          filters:
+#            branches:
+#              only:
+#                - master

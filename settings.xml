@@ -1,0 +1,6 @@
+<settings xmlns='http://maven.apache.org/SETTINGS/1.0.0'>
+    <localRepository>/home/circleci/project/.m2/repository</localRepository>
+    <interactiveMode>true</interactiveMode>
+    <usePluginRegistry>false</usePluginRegistry>
+    <offline>false</offline>
+</settings>

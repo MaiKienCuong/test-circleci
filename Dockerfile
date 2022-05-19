@@ -2,7 +2,6 @@ FROM adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim AS build
 WORKDIR /home/circleci/
 COPY .mvn ./.mvn
 COPY mvnw pom.xml ./
-COPY /root/.m2/repository /root/.m2/repository
 COPY src ./src
 RUN chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw clean package -Dmaven.test.skip=true
 

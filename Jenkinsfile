@@ -30,7 +30,11 @@ pipeline {
         setStatusPending("ci/jenkins/Test", "Test stage is running");
         sh "pwd"
         sh "ls"
-        sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw && ./mvnw test'''
+        sh "java --version"
+        sh '''chmod +x mvnw && sed -i 's/\r$//' mvnw'''
+        sh "./mvnw --version"
+        sh "echo $JAVA_HOME"
+        sh "./mvnw test"
       }
       post{
         success{

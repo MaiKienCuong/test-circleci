@@ -21,12 +21,20 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package -Dmaven.test.skip --file pom.xml
 
       - name: list all file
         run: ls && ls ./target
   test-job:
     runs-on: ubuntu-18.04
+    steps:
+      - name: show info
+        run: pwd && ls && whoami
+  deploy:
+    runs-on: ubuntu-18.04
+    needs:
+      - docker-build-and-push-job
+      - test-job
     steps:
       - name: show info
         run: pwd && ls && whoami

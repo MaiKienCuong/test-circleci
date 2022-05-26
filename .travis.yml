@@ -7,26 +7,31 @@ before_cache:
   - rm -rf $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/_remote.repositories
   - rm -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/maven-metadata-local.xml
   - rm -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/test-circleci-0.0.1.jar
+  - docker save -o $HOME/docker_images/images.tar adoptopenjdk/openjdk11 || true
 
 cache:
   directories:
     - $HOME/.m2
+    - $HOME/docker_images
 
 branches:
   only:
     - travis-ci
 
+install: true
+
 before_install:
   - chmod +x mvnw
+  - ls $HOME/docker_images
+  - if [ -d $HOME/docker_images ]; then docker load -i $HOME/docker_images/images.tar || true; else mkdir -p $HOME/docker_images; fi
 
 stages:
-  - build-java
-  - build-push-docker
+  - build
 
 jobs:
   include:
-    - stage: build-java
-      name: "Build jar file"
+    - stage: build
+      name: "Build"
       script:
         - java --version
         - mvn --version
@@ -35,10 +40,6 @@ jobs:
         - whoami
         - ls
         - echo current user ${CURRENT_USER}
-
-    - stage: build-push-docker
-      name: "Build and push docker image to docker hub"
-      script:
         - docker images
         - docker build -t ${DOCKERHUB_USERNAME}/${DOCKERHUB_IMAGE}:${DOCKERHUB_TAG} .
         - docker images

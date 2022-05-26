@@ -1,30 +1,32 @@
 version: 2.1
 
 jobs:
-  test:
-    docker:
-      - image: adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - restore_cache:
-          key: maven-dependencies-v3-{{ .Branch }}-{{ checksum "pom.xml" }}
-      - run:
-          name: set up mvn command
-          command: |
-            whoami
-            pwd
-            ls
-            mkdir -p /home/circleci/project/.m2/repository
-            chmod +x mvnw
-            sed -i "s/\r$//" mvnw
-            ./mvnw --version
-            ./mvnw --settings settings.xml test
-      - save_cache:
-          key: maven-dependencies-v3-{{ .Branch }}-{{ checksum "pom.xml" }}
-          paths:
-            - "/home/circleci/project/.m2/repository"
+  #  test:
+  #    docker:
+  #      - image: adoptopenjdk/openjdk11:jdk-11.0.14.1_1-alpine-slim
+  #    steps:
+  #      - checkout
+  #      - setup_remote_docker:
+  #          docker_layer_caching: true
+  #      - run:
+  #          name: create folder dependencies
+  #          command: mkdir -p /home/circleci/project/.m2/repository
+  #      - restore_cache:
+  #          key: maven-dependencies-v4-{{ .Branch }}-{{ checksum "pom.xml" }}
+  #      - run:
+  #          name: set up mvn command
+  #          command: |
+  #            whoami
+  #            pwd
+  #            ls
+  #            chmod +x mvnw
+  #            sed -i "s/\r$//" mvnw
+  #            ./mvnw --version
+  #            ./mvnw --settings settings.xml test
+  #      - save_cache:
+  #          key: maven-dependencies-v4-{{ .Branch }}-{{ checksum "pom.xml" }}
+  #          paths:
+  #            - "/home/circleci/project/.m2/repository"
   build-and-push:
     environment:
       DOCKER_IMAGE: cuongmaikien/test-circleci
@@ -35,21 +37,25 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - run:
+          name: create folder dependencies
+          command: mkdir -p /home/circleci/project/.m2/repository
       - restore_cache:
-          key: maven-dependencies-v3-{{ .Branch }}-{{ checksum "pom.xml" }}
+          key: maven-dependencies-v5-{{ .Branch }}-{{ checksum "pom.xml" }}
       - run:
           name: run build
           command: |
             whoami
             pwd
+            ls /home/circleci/project/.m2/repository
             chmod +x mvnw
             sed -i "s/\r$//" mvnw
             ./mvnw --version
-            ./mvnw --settings settings.xml package
+            ./mvnw --settings settings.xml package -D.maven.test.skip
             ls
-            mkdir -p /home/circleci/project/caches
+            if [ -d /home/circleci/project/caches ]; then echo folder /home/circleci/project/caches exists; else mkdir -p /home/circleci/project/caches; fi
       - restore_cache:
-          key: maven-dependencies-v3-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          key: maven-dependencies-v4-{{ .Branch }}-{{ checksum "Dockerfile" }}
       - run:
           name: load cache
           command: |
@@ -59,13 +65,17 @@ jobs:
           name: build
           command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
-            docker build --cache-from=test-circleci -t $DOCKER_IMAGE:$DOCKER_TAG .
-            docker save -o /home/circleci/project/caches/test-circleci.tar cuongmaikien/test-circleci
+            docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
+            docker save -o /home/circleci/project/caches/test-circleci.tar adoptopenjdk/openjdk11
             docker images
       - save_cache:
-          key: maven-dependencies-v3-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          key: maven-dependencies-v4-{{ .Branch }}-{{ checksum "Dockerfile" }}
           paths:
             - "/home/circleci/project/caches/test-circleci.tar"
+      - save_cache:
+          key: maven-dependencies-v5-{{ .Branch }}-{{ checksum "pom.xml" }}
+          paths:
+            - "/home/circleci/project/.m2/repository"
 #      - setup_remote_docker
 #      - checkout
 #      - docker/check:
@@ -98,10 +108,10 @@ jobs:
 workflows:
   my-workflow:
     jobs:
-      - test
+      #      - test
       - build-and-push:
-          requires:
-            - test
+          #          requires:
+          #            - test
           filters:
             branches:
               only:

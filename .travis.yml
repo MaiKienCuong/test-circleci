@@ -4,7 +4,6 @@ jdk:
   - oraclejdk11
 
 before_cache:
-  - tree -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/_remote.repositories
   - rm -rf $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/_remote.repositories
   - rm -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/maven-metadata-local.xml
   - rm -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/test-circleci-0.0.1.jar
@@ -20,11 +19,26 @@ branches:
 before_install:
   - chmod +x mvnw
 
-script:
-  - java --version
-  - mvn --version
-  - mvn clean package -Dmaven.test.skip
-  - pwd
-  - whoami
-  - ls
-  - echo current user ${CURRENT_USER}
+stages:
+  - build-java
+  - build-push-docker
+
+jobs:
+  include:
+    - stage: build-java
+      name: "Build jar file"
+      script:
+        - java --version
+        - mvn --version
+        - mvn clean package -Dmaven.test.skip
+        - pwd
+        - whoami
+        - ls
+        - echo current user ${CURRENT_USER}
+
+    - stage: build-push-docker
+      name: "Build and push docker image to docker hub"
+      script:
+        - docker images
+        - docker build -t ${DOCKERHUB_USERNAME}/${DOCKERHUB_IMAGE}:${DOCKERHUB_TAG} .
+        - docker images

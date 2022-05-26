@@ -3,6 +3,12 @@ language: java
 jdk:
   - oraclejdk11
 
+before_cache:
+  - tree -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/_remote.repositories
+  - rm -rf $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/_remote.repositories
+  - rm -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/maven-metadata-local.xml
+  - rm -f $HOME/.m2/repository/iuh/fit/maikiencuong/test-circleci/0.0.1/test-circleci-0.0.1.jar
+
 cache:
   directories:
     - $HOME/.m2

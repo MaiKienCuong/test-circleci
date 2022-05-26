@@ -1,0 +1,24 @@
+language: java
+
+jdk:
+  - oraclejdk11
+
+cache:
+  directories:
+    - $HOME/.m2
+
+branches:
+  only:
+    - travis-ci
+
+before_install:
+  - chmod +x mvnw
+
+script:
+  - java --version
+  - mvn --version
+  - mvn clean package -Dmaven.test.skip
+  - pwd
+  - whoami
+  - ls
+  - echo current user ${CURRENT_USER}

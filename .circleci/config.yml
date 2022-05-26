@@ -61,6 +61,7 @@ jobs:
           command: |
             set +o pipefail
             docker load -i /home/circleci/project/caches/test-circleci.tar | true
+            docker images
       - run:
           name: build
           command: |

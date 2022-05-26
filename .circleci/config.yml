@@ -66,6 +66,7 @@ jobs:
           name: build
           command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
+            ls -la
             docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
             docker save -o /home/circleci/project/caches/test-circleci.tar adoptopenjdk/openjdk11
             docker images
